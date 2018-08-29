@@ -1,7 +1,7 @@
 import os
 import shutil
 import argparse
-import datetime
+from datetime import datetime
 
 # Copy photos to <sourcePath>
 # Run <sourcePath> through ExifRenamer
@@ -21,35 +21,45 @@ class Photo:
     @property
     def year_month(self):
         name = self._filename.split('.')[0]
-        dt = datetime.strptime(name, self.filename_pattern)
-        return dt.strftime('%Y/%M')
+        dt = Photo.parse_name(name)
+        return dt.strftime('%Y/%m')
     
     @property
     def filename(self):
         return self._filename
     
-    @property
-    def is_valid(self):
-        # TODO: check that file name follows pattern YYYY-MM-DD_HH-mm-ss
-        return os.path.isfile(self.path)
-        
-def create_folder(path):
-	if not os.path.exists(path):
-		os.makedirs(path)
+    @staticmethod
+    def is_valid(path, filename):
+        name = filename.split('.')[0]
+        return os.path.isfile(os.path.join(path, filename)) and Photo.parse_name(name) is not None
+
+    @staticmethod
+    def parse_name(filename):
+        try:
+            return datetime.strptime(filename, Photo.filename_pattern)
+        except:
+            return None
+
+def create_folder(dirpath):
+	if not os.path.exists(dirpath):
+		os.makedirs(dirpath)
 
 def get_photos(source_path):
     photos = {}
-    for dirpath, dirnames, filenames in os.walk(sourcePath):
+    for dirpath, dirnames, filenames in os.walk(source_path):
         for filename in filenames:
-            photos[filename] = Path(dirpath, filename)
+            print(Photo.is_valid(dirpath, filename), filename)
+            if Photo.is_valid(dirpath, filename):
+                photos[filename] = Photo(dirpath, filename)
     return photos
     
 def organize(photos, target_path):
-    for photo in photos:
-        if photo.is_valid():            
-            create_folder(photo.year_month())
-            print(photo.path(), '->', os.path.join(photo.year_month(), photo.filename()))
-            shutil.move(photo.path(), os.path.join(photo.year_month(), photo.filename()))
+    for filename, photo in photos.iteritems():
+        target_path = os.path.realpath(target_path)
+        folder = os.path.join(target_path, photo.year_month)
+        create_folder(folder)
+        print('{} -> {}'.format(photo.path, os.path.join(folder, photo.filename)))
+        shutil.move(photo.path, os.path.join(folder, photo.filename))
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Organizes photos named according to date pattern YYYY-MM-DD* into folder named by year/month.')
@@ -57,5 +67,8 @@ if __name__ == '__main__':
     parser.add_argument('target', help='Folder to sort photos into.')
     args = parser.parse_args()
     
+    print('Scanning {} for photos'.format(args.source))
     photos = get_photos(args.source)
+
+    print('Organizing {} photos'.format(len(photos)))
     organize(photos, args.target)
