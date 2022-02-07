@@ -40,7 +40,7 @@ class Handler(metaclass=abc.ABCMeta):
 class ValidatePhoto(Handler):
 
     def process(self, photo):
-        Photo.is_photo()
+        # Photo.is_photo()
         # is file
         # has exif
         print('Validating photo...')
@@ -50,8 +50,8 @@ class CreateDestination(Handler):
 
     def process(self, object):
         print('Creating destination...')
-        #if not path.exists(dirpath):
-            #os.makedirs(dirpath)
+        # if not path.exists(dirpath):
+        # os.makedirs(dirpath)
         pass
 
 

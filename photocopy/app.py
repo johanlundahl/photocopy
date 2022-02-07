@@ -3,16 +3,15 @@ from os import path
 import sys
 import shutil
 import time
-from exif import Image
-import exifread
 from photocopy.photo import Photo
 from photocopy.arguments import Arguments
 from photocopy.commands import OrganizeManager
 
+
 def name_photos(photos):
     for index, photo in enumerate(photos):
         if photo.has_created_time:
-            #print(f'{photo.filename} {photo.created}')
+            # print(f'{photo.filename} {photo.created}')
             progress('Renamed %s photos\r' % (index))
     print(f'Renamed {len(photos)} photos')
 
@@ -24,8 +23,8 @@ def progress(msg):
 
 
 def create_folder(dirpath):
-	if not path.exists(dirpath):
-		os.makedirs(dirpath)
+    if not path.exists(dirpath):
+        os.makedirs(dirpath)
 
 
 def collect(source_path):
@@ -55,12 +54,12 @@ def organize(photos, target_path):
 if __name__ == '__main__':
     print('------------ Photos ------------')
     args = Arguments.init()
-    manager = OrganizeManager() # add arguments, e.g. args.target
+    manager = OrganizeManager()  # add arguments, e.g. args.target
 
     print('Scanning {} for photos'.format(args.source))
     photos = collect(args.source)
 
-    #files = 
+    # files =
 
     for photo in photos:
         manager.delegate(photo)
