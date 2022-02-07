@@ -1,6 +1,6 @@
 from datetime import datetime
-import os
 import exifread
+import os
 
 
 class Photo:

@@ -5,9 +5,9 @@ import shutil
 import time
 from exif import Image
 import exifread
-from photo import Photo
-from arguments import Arguments
-from commands import OrganizeManager
+from photocopy.photo import Photo
+from photocopy.arguments import Arguments
+from photocopy.commands import OrganizeManager
 
 def name_photos(photos):
     for index, photo in enumerate(photos):
