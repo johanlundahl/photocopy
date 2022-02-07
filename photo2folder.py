@@ -3,18 +3,24 @@ from os import path
 import sys
 import shutil
 import time
+from exif import Image
+import exifread
 from photo import Photo
 from arguments import Arguments
+from commands import OrganizeManager
 
-# Copy photos to <sourcePath>
-# Run <sourcePath> through ExifRenamer
-# Run this script
+def name_photos(photos):
+    for index, photo in enumerate(photos):
+        if photo.has_created_time:
+            #print(f'{photo.filename} {photo.created}')
+            progress('Renamed %s photos\r' % (index))
+    print(f'Renamed {len(photos)} photos')
 
 
 def progress(msg):
     sys.stdout.write(msg)
     sys.stdout.flush()
-    #time.sleep(0.2)
+    time.sleep(0.2)
 
 
 def create_folder(dirpath):
@@ -23,12 +29,12 @@ def create_folder(dirpath):
 
 
 def collect(source_path):
-    photos = {}
+    photos = []
     for dirpath, dirnames, filenames in os.walk(source_path):
         for filename in filenames:
-            if Photo.is_valid(dirpath, filename):
+            if Photo.is_photo(dirpath, filename):
                 progress('collected %s photos\r' % (len(photos)))
-                photos[filename] = Photo(dirpath, filename)
+                photos.append(Photo(dirpath, filename))
     print(f'Collected {len(photos)} photos')
     return photos
 
@@ -49,7 +55,12 @@ def organize(photos, target_path):
 if __name__ == '__main__':
     print('------------ Photos ------------')
     args = Arguments.init()
+    manager = OrganizeManager() # add arguments, e.g. args.target
 
     print('Scanning {} for photos'.format(args.source))
     photos = collect(args.source)
-    organize(photos, args.target)
+
+    #files = 
+
+    for photo in photos:
+        manager.delegate(photo)
