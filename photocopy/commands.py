@@ -1,13 +1,16 @@
 import abc
+import os
+from os import path
+import shutil
 
 
 class OrganizeManager:
 
-    def __init__(self):
+    def __init__(self, target_path):
         self.move = MovePhoto()
-        self.rename = RenamePhoto(self.move)
-        self.create = CreateDestination(self.rename)
-        self.validate = ValidatePhoto(self.create)
+        self.create = CreateDestination(self.move, target_path)
+        self.rename = RenamePhoto(self.create)
+        self.validate = ValidatePhoto(self.rename)
 
     def delegate(self, photo):
         self.validate.handle(photo)
@@ -46,20 +49,27 @@ class ValidatePhoto(Handler):
         print('Validating photo...')
 
 
-class CreateDestination(Handler):
-
-    def process(self, object):
-        print('Creating destination...')
-        # if not path.exists(dirpath):
-        # os.makedirs(dirpath)
-        pass
-
-
 class RenamePhoto(Handler):
 
-    def process(self, object):
-        print('Renaming photo...')
-        pass
+    def __init__(self, next_handler=None, target_path=None):
+        self._target_path = target_path
+        super().__init__()
+
+    def process(self, photo):
+        renamed = path.join(photo.path, photo.filename_ordered)
+        shutil.move(photo.full_path, renamed)
+
+
+class CreateDestination(Handler):
+
+    def __init__(self, next_handler=None, target_path=None):
+        self._target_path = target_path
+        super().__init__()
+
+    def process(self, photo):
+        destination = path.join(self._target_path, photo.year_month)
+        if not path.exists(destination):
+            os.makedirs(destination)
 
 
 class MovePhoto(Handler):

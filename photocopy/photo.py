@@ -12,24 +12,30 @@ class Photo:
 
     @property
     def path(self):
-        return os.path.join(self._dirpath, self._filename)
+        return self._dirpath
 
     @property
-    def year_month(self):
-        name = self._filename.split('.')[0]
-        dt = Photo.parse_name(name)
-        return dt.strftime('%Y/%m')
+    def full_path(self):
+        return os.path.join(self._dirpath, self._filename)
 
     @property
     def filename(self):
         return self._filename
 
     @property
+    def filename_ordered(self):
+        return self.created.strftime(self.filename_pattern)
+
+    @property
+    def year_month(self):
+        return self.created.strftime('%Y/%m')
+
+    @property
     def created(self):
-        f = open(self.path, 'rb')
+        f = open(self.full_path, 'rb')
         tags = exifread.process_file(f)
         created = tags["EXIF DateTimeOriginal"]
-        return created
+        return datetime.strptime(created.printable, '%Y:%m:%d %H:%M:%S')
 
     @property
     def has_created_time(self):

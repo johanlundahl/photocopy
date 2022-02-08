@@ -54,12 +54,11 @@ def organize(photos, target_path):
 if __name__ == '__main__':
     print('------------ Photos ------------')
     args = Arguments.init()
-    manager = OrganizeManager()  # add arguments, e.g. args.target
+
+    organizer = OrganizeManager(args.target)
 
     print('Scanning {} for photos'.format(args.source))
     photos = collect(args.source)
 
-    # files =
-
     for photo in photos:
-        manager.delegate(photo)
+        organizer.delegate(photo)
