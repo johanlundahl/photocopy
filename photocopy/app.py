@@ -1,30 +1,15 @@
 import os
-from os import path
 import sys
-import shutil
 import time
 from photocopy.photo import Photo
 from photocopy.arguments import Arguments
 from photocopy.commands import OrganizeManager
 
 
-def name_photos(photos):
-    for index, photo in enumerate(photos):
-        if photo.has_created_time:
-            # print(f'{photo.filename} {photo.created}')
-            progress('Renamed %s photos\r' % (index))
-    print(f'Renamed {len(photos)} photos')
-
-
 def progress(msg):
     sys.stdout.write(msg)
     sys.stdout.flush()
     time.sleep(0.2)
-
-
-def create_folder(dirpath):
-    if not path.exists(dirpath):
-        os.makedirs(dirpath)
 
 
 def collect(source_path):
@@ -38,19 +23,6 @@ def collect(source_path):
     return photos
 
 
-def organize(photos, target_path):
-    for index, val in enumerate(photos):
-        photo = photos[val]
-        target_path = path.realpath(target_path)
-        folder = path.join(target_path, photo.year_month)
-        create_folder(folder)
-        shutil.move(photo.path, path.join(folder, photo.filename))
-
-        percent = round(index/len(photos)*100)
-        progress(f'Organized {percent}%, {index} photos\r')
-    print(f'Organized {len(photos)} photos')
-
-
 if __name__ == '__main__':
     print('------------ Photos ------------')
     args = Arguments.init()
@@ -60,5 +32,7 @@ if __name__ == '__main__':
     print('Scanning {} for photos'.format(args.source))
     photos = collect(args.source)
 
-    for photo in photos:
+    for index, photo in enumerate(photos):
         organizer.delegate(photo)
+        progress(f'Processed {index} of {len(photos)}\r')
+    print(f'Processed {len(photos)} of {len(photos)}')

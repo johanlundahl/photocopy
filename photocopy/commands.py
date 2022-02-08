@@ -46,7 +46,7 @@ class ValidatePhoto(Handler):
         # Photo.is_photo()
         # is file
         # has exif
-        print('Validating photo...')
+        pass
 
 
 class RenamePhoto(Handler):
@@ -75,5 +75,4 @@ class CreateDestination(Handler):
 class MovePhoto(Handler):
 
     def process(self, object):
-        print('Moving photo...')
         pass
